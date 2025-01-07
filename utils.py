@@ -12,7 +12,7 @@ def format_time(seconds):
     hours = (seconds % 86400) // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
-    
+
     days_str = str(days)
     hours_str = str(hours).zfill(2)
     minutes_str = str(minutes).zfill(2)
@@ -50,12 +50,15 @@ def rateLimit():
     RATE_LIMIT = now
 
 def doARequest(requestText, v=1, mute_exceptions=False):
-    global SRC_URL
+    global SRC_URL, RATE_LIMIT
     src_url = f"{SRC_URL}{v}/"
     while True:
         rateLimit()
         try:
-            data = requests.get(f"{src_url}{requestText}", timeout=60)
+            data = requests.get(f"{src_url}{requestText}")
+            if data.status_code == 500 and "games" in requestText:
+                data = requests.get(f"{src_url}games?offset=190&max=50&embed=moderators)")
+            RATE_LIMIT = time.time()
             data = data.json()
             if "status" in data:
                 if data["status"] == 404:
@@ -118,6 +121,7 @@ def get_runs(func,**kwargs):
     for direction in ["asc", "desc"]:
         offset = 0
         while offset < 10000:
+            print(offset)
             runs = doARequest(f"runs?direction={direction}&max=200&offset={offset}&orderby=date{params}")
             if not runs: return False #deleted user while fetching
             runs = runs.get("data",[])

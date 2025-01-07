@@ -1,8 +1,12 @@
 import requests, json, time
 from utils import *
 
-with open("vdatabase.json", "r", encoding = "UTF-8") as f:
-    database_list = json.load(f)
+database_list = []
+try:
+    with open("vdatabase.json", "r", encoding = "UTF-8") as f:
+        database_list = json.load(f)
+except:
+    print("meow")
 mods = set()
 database = {}
 for mod in database_list:
@@ -10,19 +14,15 @@ for mod in database_list:
     mods.add(mod["id"])
     database[mod["id"]] = mod
 database_list = None
-step = 100
 offset = 0
+size = 50
 while True:
     try:
-        print(step)
-        if step == 0:
-            print(f"jumped offset {offset}")
-            offset += 1
-            step = 100
-        games = doARequest(f"games?offset={offset}&max={step}&embed=moderators", mute_exceptions=True)
+        games = doARequest(f"games?offset={offset}&max={size}&embed=moderators", mute_exceptions=False)
         games = games.get("data",[])
         for game in games:
             game_id = game.get("id","")
+            print(f"Games fetched: {offset}")
             json.dump(game, open(f"outputs/games/{game_id}.json", "w"))
             for mod in game.get("moderators",{}).get("data",[]):
                 modID = mod.get("id","")
@@ -44,12 +44,11 @@ while True:
                     "flag": flag,
                     "game_amount": 1
                 }
-            time_estimation(offset,40000,step)
-        offset += step
-        if len(games) < step:
+        offset += size
+        if len(games) < size:
             break
-    except Exception:
-        step = step//2
+    except Exception as e:
+        print(e)
         continue
 
 database_list = list(database.values())

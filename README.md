@@ -61,6 +61,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * **FernE047** - *Code De-Optimizations* - [Github](https://github.com/FernE047)
 * **Bluestonex63** - *Maintaining the project from 2022 to 2023* - [Github](https://github.com/Bluestonex63)
 * **FernE047** - *Current Developer* - [Github](https://github.com/FernE047)
+* **Biksel** - *Small optimizations and updates :)*
 
 See also the list of [contributors](https://github.com/FernE047/farmington-tracker/contributors) who participated in this project.
 

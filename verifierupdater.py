@@ -23,7 +23,7 @@ def process20kRuns(runs,fetched_runs):
         run = processRun(run)
         if run: allruns.append(run)
     return allruns
-    
+
 def getRuns(user_id):
     allruns = get_runs(processRuns,examiner=user_id)
     return allruns
@@ -37,6 +37,11 @@ def getRuns20k(moderator):
                     platform = json.load(f)
                 print(emu, platform["name"], status, moderator["name"], len(allruns))
                 allruns.extend(get_runs(lambda x:process20kRuns(x,allruns), examiner=moderator["id"], emulated=emu, platform=platform["id"], status=status))
+
+    for status in ["verified", "rejected"]:
+        print(status, moderator["name"], len(allruns))
+        allruns.extend(get_runs(lambda x:process20kRuns(x,allruns), examiner=moderator["id"], status=status, orderby="platform", direction="asc"))
+
     return allruns
 
 with open("vdatabase.json", "r", encoding="UTF-8") as f:
